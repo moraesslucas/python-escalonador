@@ -21,23 +21,12 @@ class Runner:
                     self._original_processes.remove(self._running_process)
                     self._finished_processes.append(self._running_process)
                     self._running_process = None
-                    if len(self._available_process) > 0:
-                        timeslice = original_timeslice
-                        self._running_process = self._available_process.pop()
                 elif self._running_process.process_time == 0 and self._running_process.device_time > 0:
                     self._blocked_processes.insert(0, self._running_process)
                     self._running_process = None
-                    if len(self._available_process) > 0:
-                        timeslice = original_timeslice
-                        self._running_process = self._available_process.pop()
                 elif timeslice < 1 and len(self._available_process) > 0:
                     self._available_process.insert(0, self._running_process)
                     self._running_process = None
-                    timeslice = original_timeslice
-                    self._running_process = self._available_process.pop()
-            elif len(self._available_process) > 0:
-                timeslice = original_timeslice
-                self._running_process = self._available_process.pop()
 
             if self._running_device is not None:
                 if self._running_device.device_time == 0:
@@ -47,6 +36,10 @@ class Runner:
                         self._running_device = self._blocked_processes.pop()
             elif len(self._blocked_processes) > 0 and self._running_device is None:
                 self._running_device = self._blocked_processes.pop()
+
+            if len(self._available_process) > 0 and self._running_process is None:
+                timeslice = original_timeslice
+                self._running_process = self._available_process.pop()
 
             if self._running_process is not None:
                 self._running_process.add_history("X")
