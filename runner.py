@@ -32,9 +32,8 @@ class Runner:
                 if self._running_device.device_time == 0:
                     self._available_process.insert(0, self._running_device)
                     self._running_device = None
-                    if len(self._blocked_processes) > 0:
-                        self._running_device = self._blocked_processes.pop()
-            elif len(self._blocked_processes) > 0 and self._running_device is None:
+
+            if len(self._blocked_processes) > 0 and self._running_device is None:
                 self._running_device = self._blocked_processes.pop()
 
             if len(self._available_process) > 0 and self._running_process is None:
@@ -59,6 +58,8 @@ class Runner:
             for process in self._finished_processes:
                 process.add_history("T")
 
+    def print_order(self):
+        self._finished_processes.sort(key=lambda x:x.pid, reverse=False)
         for process in self._finished_processes:
             print(process.pid)
             print(process.history)
